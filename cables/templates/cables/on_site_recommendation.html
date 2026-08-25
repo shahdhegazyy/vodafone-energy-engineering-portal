@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>On-Site Recommendation · Vodafone Technology</title>
+  <link rel="stylesheet" href="{% static 'cables/css/on_site.css' %}">
+  <link rel="stylesheet" href="{% static 'cables/css/on_site_modes.css' %}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{% url 'portal:home' %}"><span>V</span><div><strong>Vodafone Technology</strong><small>On-Site Recommendation</small></div></a>
+    <a class="engineer-link" href="{% url 'cables:dashboard' %}">ENGINEERING VIEW</a>
+  </header>
+  <main>
+    <section class="intro"><p>FIELD TECHNICIAN TOOL</p><h1>Get the cable recommendation.</h1><span>Choose the standard 1.5 V method or the optimized 3 V method under testing, then enter the essential field information.</span></section>
+    {% if messages %}{% for message in messages %}<div class="message">{{ message }}</div>{% endfor %}{% endif %}
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    <section class="workspace">
+      <article class="input-card">
+        <div class="card-title"><span>01</span><div><h2>Method and essential information</h2><small>Choose a method, then complete five fields</small></div></div>
+        <form method="post">{% csrf_token %}
+          {% for field in form %}{% if field.name == "voltage_drop_mode" %}<fieldset><legend>{{ field.label }}</legend>{{ field }}{% for e in field.errors %}<em>{{ e }}</em>{% endfor %}</fieldset>{% else %}<label>{{ field.label }}{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{% for e in field.errors %}<em>{{ e }}</em>{% endfor %}</label>{% endif %}{% endfor %}
+          <button type="submit" name="action" value="calculate">Get recommendation</button>
+        </form>
+        <div class="fixed"><b>Fixed assumptions</b><span>Copper conductor · 25°C · Selected voltage-drop limit · 25% CB safety margin</span></div>
+      </article>
+      <article class="result-card">
+        <div class="card-title"><span>02</span><div><h2>Recommended installation</h2><small>Immediate field result</small></div></div>
+        {% if selection %}{% if recommendation %}
+          <div class="pass">PASS</div><p class="eyebrow">RECOMMENDED COPPER CABLE</p>
+          {% if selected_mode == "optimized" %}<div class="method optimized"><b>OPTIMIZED · 3 V LIMIT</b><span>Under testing — engineering validation required</span></div>{% else %}<div class="method standard"><b>STANDARD · 1.5 V LIMIT</b><span>Established on-site selection method</span></div>{% endif %}
+          <div class="cable-size">{{ recommendation.size_mm2|floatformat:0 }} <small>mm²</small></div>
+          <div class="metrics">
+            <div><small>Circuit breaker</small><strong>{{ selection.selected_breaker_a|floatformat:0 }} A</strong></div>
+            <div><small>Voltage drop</small><strong>{{ recommendation.voltage_drop|floatformat:2 }} V</strong></div>
+            <div><small>Maximum route</small><strong>{{ recommendation.maximum_length|floatformat:2 }} m</strong></div>
+            <div><small>Voltage-drop limit</small><strong>{{ selection.voltage_drop_limit_v|floatformat:1 }} V</strong></div>
+          </div>
+          <form method="post" class="save-form">{% csrf_token %}{% for field in form %}<input type="hidden" name="{{ field.name }}" value="{{ field.value|default_if_none:'' }}">{% endfor %}<button type="submit" name="action" value="save">Save recommendation</button></form>
+        {% else %}<div class="no-match"><b>No approved cable found</b><span>The route cannot meet the selected {{ selection.voltage_drop_limit_v|floatformat:1 }} V limit using the approved cable list. Ask an engineer to review it.</span></div>{% endif %}
+        {% else %}<div class="empty"><b>Your result will appear here</b><span>Choose a selection method, complete the five fields and select “Get recommendation”.</span></div>{% endif %}
+      </article>
+    </section>
+  </main>
+  <footer><strong>Vodafone Technology · Energy Engineering</strong><span>Technician field recommendation tool</span></footer>
+</body></html>

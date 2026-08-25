@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vodafone Energy Engineering Portal</title>
+  <link rel="stylesheet" href="{% static 'portal/css/portal.css' %}">
+  <link rel="stylesheet" href="{% static 'portal/css/guide.css' %}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{% url 'portal:home' %}"><span>V</span><div><strong>Vodafone Technology</strong><small>Energy Engineering Portal</small></div></a>
+    <a href="{% url 'portal:history' %}" style="text-decoration:none"><b>VIEW SAVED DESIGNS</b></a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <p>DATA CENTRE · ENERGY ENGINEERING</p>
+        <h1>Design tools in one place.</h1>
+        <span>Choose the engineering workflow you need. Each workspace keeps its own inputs, calculations, checks and results.</span>
+      </div>
+      <div class="hero-panel">
+        <small>AVAILABLE WORKSPACES</small>
+        <strong>03</strong>
+        <span>Engineering design and technician field selection</span>
+      </div>
+    </section>
+
+    <section class="tools" aria-label="Engineering tools">
+      <article class="tool-card">
+        <div class="number">01</div>
+        <div class="icon cable-icon"><i></i><i></i></div>
+        <p>DC DISTRIBUTION</p>
+        <h2>DC Cable Design Tool</h2>
+        <span>Calculate temperature-corrected resistivity, voltage drop, circuit-breaker rating and the smallest approved cable passing every conductor-temperature case.</span>
+        <ul><li>Four conductor-temperature cases</li><li>Complete approved cable checks</li><li>Batch Excel calculations and reports</li></ul>
+        <button class="how-button" type="button" data-guide="cable">How to use cable design <b>?</b></button>
+        <a href="{% url 'cables:dashboard' %}">Open cable design <b>→</b></a>
+      </article>
+
+      <article class="tool-card">
+        <div class="number">02</div>
+        <div class="icon rack-icon"><i></i><i></i><i></i></div>
+        <p>RACK POWER</p>
+        <h2>AC/DC Rack Design Tool</h2>
+        <span>Combine AC and DC devices in one rack, calculate device and PSU currents, check rack capacity and map protected circuits.</span>
+        <ul><li>48 V DC and 220 V AC equipment</li><li>Rack capacity and breaker checks</li><li>PSU-to-circuit mapping</li></ul>
+        <button class="how-button" type="button" data-guide="rack">How to use rack design <b>?</b></button>
+        <a href="{% url 'rack_design:dashboard' %}">Open rack design <b>→</b></a>
+      </article>
+
+      <article class="tool-card technician-card">
+        <div class="number">03</div>
+        <div class="icon technician-icon"><i></i><i></i></div>
+        <p>FIELD TECHNICIANS</p>
+        <h2>On-Site Recommendation</h2>
+        <span>A focused field screen with a standard 1.5 V method and an optimized 3 V method that remains under testing.</span>
+        <ul><li>Standard fixed 1.5 V option</li><li>Optimized 3 V option — under testing</li><li>Fixed copper conductor at 25°C</li></ul>
+        <button class="how-button" type="button" data-guide="onsite">How to use on-site recommendation <b>?</b></button>
+        <a href="{% url 'cables:on_site_recommendation' %}">Open on-site recommendation <b>→</b></a>
+      </article>
+    </section>
+
+    <aside><strong>Engineering aid.</strong> Results support design review and do not replace final protection coordination, manufacturer limits or engineering approval.</aside>
+  </main>
+  <footer><strong>Vodafone Technology · Energy Engineering</strong><span>Data centre design workspace</span></footer>
+  <div class="guide-overlay" id="usage-guide" role="dialog" aria-modal="true" aria-labelledby="guide-title" hidden>
+    <section class="guide-dialog">
+      <div class="guide-heading"><div><small>FEATURE DEMO</small><h2 id="guide-title">How to use</h2><p id="guide-subtitle"></p></div><button type="button" class="guide-close" data-close-guide aria-label="Close instructions">×</button></div>
+      <div class="feature-demo" data-demo="cable" hidden>
+        <article><span>01</span><img src="{% static 'portal/images/guide_inputs.svg' %}" alt="Cable design inputs"><h3>Enter project and circuit information</h3><p>Add the site, rack, engineer, load current, one-way length and the four conductor temperatures.</p></article>
+        <article><span>02</span><img src="{% static 'portal/images/guide_result.svg' %}" alt="Cable recommendation result"><h3>Calculate and review every cable</h3><p>The tool selects the breaker, compares all approved cable areas and recommends the smallest cable passing every temperature case.</p></article>
+        <article><span>03</span><img src="{% static 'portal/images/guide_save.svg' %}" alt="Save cable design"><h3>Save or download the result</h3><p>Save the selection to database history or download the generated engineering report.</p></article>
+      </div>
+      <div class="feature-demo" data-demo="rack" hidden>
+        <article><span>01</span><img src="{% static 'portal/images/guide_rack.svg' %}" alt="Adding rack devices"><h3>Enter the rack information</h3><p>Add the site, rack reference and engineer, then select the AC and DC devices installed in the rack.</p></article>
+        <article><span>02</span><img src="{% static 'portal/images/guide_rack_result.svg' %}" alt="Rack power checks"><h3>Review rack power checks</h3><p>Calculate device currents, PSU demand, circuit mapping, breakers and the total rack capacity result.</p></article>
+        <article><span>03</span><img src="{% static 'portal/images/guide_save.svg' %}" alt="Save rack design"><h3>Save the rack design</h3><p>Save the completed rack so it remains available from View Saved Designs.</p></article>
+      </div>
+      <div class="feature-demo" data-demo="onsite" hidden>
+        <article><span>01</span><img src="{% static 'portal/images/guide_inputs.svg' %}" alt="On-site essential inputs"><h3>Choose the selection method</h3><p>Use Standard for the fixed 1.5 V limit. The Optimized 3 V option is still under testing and requires engineering validation.</p></article>
+        <article><span>02</span><img src="{% static 'portal/images/guide_result.svg' %}" alt="On-site cable recommendation"><h3>Enter details and calculate</h3><p>Enter site, rack, technician, load current and one-way length to see the cable, breaker, voltage drop and method status.</p></article>
+        <article><span>03</span><img src="{% static 'portal/images/guide_save.svg' %}" alt="Save on-site recommendation"><h3>Save the field result</h3><p>Select Save Recommendation so engineers can review it later in the shared database history.</p></article>
+      </div>
+      <div class="guide-footer"><button type="button" data-close-guide>Close demo</button></div>
+    </section>
+  </div>
+  <script src="{% static 'portal/js/guide.js' %}"></script>
+</body>
+</html>
