@@ -1,9 +1,21 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = "django-insecure-local-development-only-change-before-production"
-DEBUG = True
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+
+# Reads from env var in production; falls back to your local dev key
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-local-development-only-change-before-production"
+)
+
+# DEBUG=True locally (default), DEBUG=False in production (set env var)
+DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True"
+
+ALLOWED_HOSTS = os.environ.get(
+    "DJANGO_ALLOWED_HOSTS",
+    "127.0.0.1,localhost"
+).split(",")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -49,6 +61,7 @@ USE_I18N = True
 USE_TZ = True
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 DATA_DIR = BASE_DIR / "data"
 DEFAULT_CABLE_WORKBOOK = DATA_DIR / "DC_Cable_Design_and_Automatic_Selector.xlsx"
