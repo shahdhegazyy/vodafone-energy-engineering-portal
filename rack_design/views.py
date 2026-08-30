@@ -75,6 +75,22 @@ def save_design(request):
             protected_circuits=circuits, result_status="FAIL" if failure else "PASS",
             result_message=failure or "All requested devices passed.", devices=clean_devices,
         )
-        return JsonResponse({"ok": True, "id": record.pk, "message": "Rack design saved to the database."})
+        return JsonResponse({
+    "ok": True,
+    "id": record.pk,
+    "message": "Rack design saved to the database.",
+
+    "results": {
+        "rack_capacity_u": capacity,
+        "used_rack_u": used,
+        "remaining_rack_u": capacity - used,
+        "total_power_kw": round(total_power, 2),
+        "installed_devices": installed,
+        "protected_circuits": circuits,
+        "status": "FAIL" if failure else "PASS",
+
+        "devices": clean_devices,
+    }
+})
     except (KeyError, TypeError, ValueError, json.JSONDecodeError):
         return JsonResponse({"ok": False, "error": "The rack design contains invalid values."}, status=400)
