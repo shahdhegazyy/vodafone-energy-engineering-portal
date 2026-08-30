@@ -4,6 +4,9 @@ from django.shortcuts import render
 from django.views.decorators.http import require_POST
 from .models import RackDesign
 
+DC_VOLTAGE_V = 48.0
+AC_VOLTAGE_V = 220.0
+
 
 def dashboard(request):
     return render(request, "rack_design/dashboard.html")
@@ -20,10 +23,12 @@ def save_design(request):
             return JsonResponse({"ok": False, "error": "Site name, rack name and engineer are required."}, status=400)
 
         capacity = int(payload["rack_capacity_u"])
-        dc_voltage = float(payload["dc_voltage_v"])
-        ac_voltage = float(payload["ac_voltage_v"])
+        # System supply voltages are fixed engineering assumptions. Never use
+        # client-provided voltage values when recalculating a saved design.
+        dc_voltage = DC_VOLTAGE_V
+        ac_voltage = AC_VOLTAGE_V
         devices = payload.get("devices", [])
-        if capacity <= 0 or dc_voltage <= 0 or ac_voltage <= 0 or not isinstance(devices, list):
+        if capacity <= 0 or not isinstance(devices, list):
             raise ValueError
 
         used = installed = circuits = 0

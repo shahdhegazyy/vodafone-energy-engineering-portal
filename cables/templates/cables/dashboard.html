@@ -8,6 +8,7 @@
     <link rel="icon" type="image/png" href="{% static 'portal/images/vodafone.png' %}">
     <link rel="stylesheet" href="{% static 'cables/css/style.css' %}">
     <link rel="stylesheet" href="{% static 'cables/css/batch.css' %}">
+    <link rel="stylesheet" href="{% static 'cables/css/temperature-group.css' %}">
 </head>
 <body>
 
@@ -52,18 +53,47 @@
                 <div class="card-title">
                     <span>01</span>
                     <h2>Design inputs</h2>
-                    <small>Four conductor-temperature cases</small>
+                    <small>Circuit details and temperature cases</small>
                 </div>
-                <div class="fields">
-                    {% for field in form %}
-                        <label>
-                            <span>{{ field.label }}</span>
-                            {{ field }}
-                            {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
-                            {% for field_error in field.errors %}<em>{{ field_error }}</em>{% endfor %}
-                        </label>
-                    {% endfor %}
+
+                <div class="input-group">
+                    <div class="input-group-heading">
+                        <strong>Project and circuit details</strong>
+                        <small>Enter the design reference, load and route information.</small>
+                    </div>
+                    <div class="fields">
+                        {% for field in form %}
+                            {% if field.name != "temperature_below_25" and field.name != "temperature_25_30" and field.name != "temperature_30_60" and field.name != "temperature_above_60" %}
+                                <label>
+                                    <span>{{ field.label }}</span>
+                                    {{ field }}
+                                    {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+                                    {% for field_error in field.errors %}<em>{{ field_error }}</em>{% endfor %}
+                                </label>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
                 </div>
+
+                <fieldset class="temperature-group">
+                    <legend>
+                        <span>Conductor temperature cases</span>
+                        <small>Enter one exact temperature for each operating range.</small>
+                    </legend>
+                    <div class="temperature-fields">
+                        {% for field in form %}
+                            {% if field.name == "temperature_below_25" or field.name == "temperature_25_30" or field.name == "temperature_30_60" or field.name == "temperature_above_60" %}
+                                <label>
+                                    <span>{{ field.label }}</span>
+                                    {{ field }}
+                                    {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+                                    {% for field_error in field.errors %}<em>{{ field_error }}</em>{% endfor %}
+                                </label>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </fieldset>
+
                 <div class="source">
                     Fixed voltage-drop limit: <strong>3 V</strong><br>
                     Fixed cable: <strong>Copper LSZH (XLPE), 0.6/1 kV</strong><br>
