@@ -1,9 +1,24 @@
 from django import forms
 
+SITE_NAME_CHOICES = [
+    ("HQ", "HQ"),
+    ("TGM", "TGM"),
+    ("MKTM", "MKTM"),
+    ("TNT", "TNT"),
+    ("MNS", "MNS"),
+    ("AST", "AST"),
+    ("RMP", "RMP"),
+    ("BNS", "BNS"),
+    ("BRJ", "BRJ"),
+    ("Alex", "Alex"),
+]
 
 class CableDesignForm(forms.Form):
     project_reference = forms.CharField(max_length=100, required=False, label="Project reference")
-    site_name = forms.CharField(max_length=150, required=False, label="Site name")
+    site_name = forms.ChoiceField(
+        choices=SITE_NAME_CHOICES,
+        label="Site name",
+    )
     rack_name = forms.CharField(max_length=150, required=False, label="Rack name")
     engineer = forms.CharField(max_length=150, required=False, label="Engineer")
     notes = forms.CharField(required=False, label="Notes", widget=forms.TextInput())
@@ -58,7 +73,10 @@ class OnSiteRecommendationForm(forms.Form):
         ),
         initial="standard", widget=forms.RadioSelect,
     )
-    site_name = forms.CharField(max_length=150, label="Site name")
+    site_name = forms.ChoiceField(
+        choices=SITE_NAME_CHOICES,
+        label="Site name",
+    )
     rack_name = forms.CharField(max_length=150, label="Rack name")
     technician = forms.CharField(max_length=150, label="Technician name")
     load_current_a = forms.FloatField(

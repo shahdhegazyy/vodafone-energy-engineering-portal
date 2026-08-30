@@ -1,262 +1,661 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Vodafone AC/DC Rack Design Tool</title>
-<style>
-body{margin:0;font-family:Arial,Segoe UI,sans-serif;background:#f7f7f7;color:#1b1b1b}
-.portalnav{height:68px;padding:0 6%;background:#fff;border-bottom:1px solid #e1e1e1;display:flex;align-items:center;justify-content:space-between}.portalbrand{display:flex;align-items:center;gap:11px;color:#1b1b1b;text-decoration:none}.portalbrand i{width:38px;height:38px;border-radius:50%;background:#e60000;color:#fff;display:grid;place-items:center;font-size:19px;font-weight:900}.portalbrand strong,.portalbrand small{display:block}.portalbrand small{color:#667085;margin-top:2px}.homebtn{color:#c40000;text-decoration:none;font-size:12px;font-weight:bold;border:1px solid #ffcaca;background:#fff2f2;border-radius:20px;padding:8px 12px}
-header{background:#e60000;color:#fff;padding:26px 6%;box-shadow:0 3px 14px rgba(0,0,0,.12)}
-header h1{margin:0 0 6px} header p{margin:0;opacity:.9}
-main{max-width:1150px;margin:22px auto;padding:0 16px}
-.grid{display:grid;grid-template-columns:360px 1fr;gap:17px}
-.card{background:#fff;border:1px solid #e1e1e1;border-top:4px solid #e60000;border-radius:14px;padding:18px;margin-bottom:17px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-label{display:block;font-size:12px;font-weight:bold;color:#475467;margin:8px 0 5px}
-input,select{width:100%;box-sizing:border-box;padding:9px;border:1px solid #ccd3df;border-radius:8px;background:#fff}
-button{border:0;border-radius:8px;padding:10px 14px;font-weight:bold;cursor:pointer}
-.run{width:100%;background:#e60000;color:#fff;margin-top:15px}
-.add{background:#fff0f0;color:#c40000}.remove{background:#fff0f0;color:#b42318;padding:6px 9px}
-.device{border:1px solid #e0e5ec;border-radius:10px;padding:12px;margin-bottom:10px}
-.devicehead{display:flex;justify-content:space-between;align-items:center}
-.note{font-size:12px;color:#667085;line-height:1.5}
-.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.metric{background:#f8fafc;border:1px solid #e2e7ef;border-radius:10px;padding:13px}
-.metric b{display:block;font-size:21px;margin-top:5px}
-.status{padding:13px;border-radius:9px;margin-top:13px;font-weight:bold}
-.good{background:#e9f8f1;color:#087443}.bad{background:#fff0f0;color:#b42318}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{text-align:left;padding:9px;border-bottom:1px solid #e6e9ef}
-th{font-size:11px;color:#667085;text-transform:uppercase}
-.ok{color:#087443;font-weight:bold}.fail{color:#b42318;font-weight:bold}
-.formula{background:#f8fafc;border:1px solid #e5e9f0;border-radius:9px;padding:11px;font-family:Consolas,monospace;line-height:1.7}
-.badge{display:inline-block;padding:4px 8px;border-radius:12px;font-size:11px;font-weight:bold}
-.dc{background:#e9f0ff;color:#244c9b}.ac{background:#fff0f0;color:#b42318}
-@media(max-width:800px){.grid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Vodafone AC/DC Rack Design Tool</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, Segoe UI, sans-serif;
+            background: #f7f7f7;
+            color: #1b1b1b;
+        }
+
+        .portalnav {
+            height: 68px;
+            padding: 0 6%;
+            background: #fff;
+            border-bottom: 1px solid #e1e1e1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .portalbrand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            color: #1b1b1b;
+            text-decoration: none;
+        }
+
+        .portalbrand i {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #e60000;
+            color: #fff;
+            display: grid;
+            place-items: center;
+            font-size: 19px;
+            font-weight: 900;
+        }
+
+        .portalbrand strong,
+        .portalbrand small {
+            display: block;
+        }
+
+        .portalbrand small {
+            color: #667085;
+            margin-top: 2px;
+        }
+
+        .homebtn {
+            color: #c40000;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: bold;
+            border: 1px solid #ffcaca;
+            background: #fff2f2;
+            border-radius: 20px;
+            padding: 8px 12px;
+        }
+
+        header {
+            background: #e60000;
+            color: #fff;
+            padding: 26px 6%;
+            box-shadow: 0 3px 14px rgba(0, 0, 0, .12);
+        }
+
+        header h1 {
+            margin: 0 0 6px;
+        }
+
+        header p {
+            margin: 0;
+            opacity: .9;
+        }
+
+        main {
+            max-width: 1150px;
+            margin: 22px auto;
+            padding: 0 16px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 17px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #e1e1e1;
+            border-top: 4px solid #e60000;
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 17px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            color: #475467;
+            margin: 8px 0 5px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 9px;
+            border: 1px solid #ccd3df;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        button {
+            border: 0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .run {
+            width: 100%;
+            background: #e60000;
+            color: #fff;
+            margin-top: 15px;
+        }
+
+        .add {
+            background: #fff0f0;
+            color: #c40000;
+        }
+
+        .remove {
+            background: #fff0f0;
+            color: #b42318;
+            padding: 6px 9px;
+        }
+
+        .device {
+            border: 1px solid #e0e5ec;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .devicehead {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .note {
+            font-size: 12px;
+            color: #667085;
+            line-height: 1.5;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .metric {
+            background: #f8fafc;
+            border: 1px solid #e2e7ef;
+            border-radius: 10px;
+            padding: 13px;
+        }
+
+        .metric b {
+            display: block;
+            font-size: 21px;
+            margin-top: 5px;
+        }
+
+        .status {
+            padding: 13px;
+            border-radius: 9px;
+            margin-top: 13px;
+            font-weight: bold;
+        }
+
+        .good {
+            background: #e9f8f1;
+            color: #087443;
+        }
+
+        .bad {
+            background: #fff0f0;
+            color: #b42318;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 9px;
+            border-bottom: 1px solid #e6e9ef;
+        }
+
+        th {
+            font-size: 11px;
+            color: #667085;
+            text-transform: uppercase;
+        }
+
+        .ok {
+            color: #087443;
+            font-weight: bold;
+        }
+
+        .fail {
+            color: #b42318;
+            font-weight: bold;
+        }
+
+        .formula {
+            background: #f8fafc;
+            border: 1px solid #e5e9f0;
+            border-radius: 9px;
+            padding: 11px;
+            font-family: Consolas, monospace;
+            line-height: 1.7;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .dc {
+            background: #e9f0ff;
+            color: #244c9b;
+        }
+
+        .ac {
+            background: #fff0f0;
+            color: #b42318;
+        }
+
+        @media (max-width: 800px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-<nav class="portalnav"><a class="portalbrand" href="{% url 'portal:home' %}"><i>V</i><span><strong>Vodafone Technology</strong><small>Energy Engineering Portal</small></span></a><a class="homebtn" href="{% url 'portal:home' %}">← All tools</a></nav>
+
+<nav class="portalnav">
+    <a class="portalbrand" href="{% url 'portal:home' %}">
+        <i>V</i>
+        <span><strong>Vodafone Technology</strong><small>Energy Engineering Portal</small></span>
+    </a>
+    <a class="homebtn" href="{% url 'portal:home' %}">← All tools</a>
+</nav>
+
 <header>
-<h1>AC / DC Rack &amp; Circuit Breaker Decision Tool</h1>
-<p>48 V DC and 220 V AC device loading in the same rack</p>
+    <h1>AC / DC Rack &amp; Circuit Breaker Decision Tool</h1>
+    <p>48 V DC and 220 V AC device loading in the same rack</p>
 </header>
+
 <main>
-<form id="csrfForm" style="display:none">{% csrf_token %}</form>
-<div class="grid">
-<section class="card">
-<h2>System</h2>
-<div class="row">
-<div><label>Rack capacity (U)</label><input id="rack" type="number" value="42" min="1" oninput="run()"></div>
-<div><label>DC voltage (V)</label><input id="dcVoltage" type="number" value="48" min="1" oninput="run()"></div>
-</div>
+    <form id="csrfForm" style="display:none">{% csrf_token %}</form>
 
-<section class="card">
-<h2>Design record</h2>
-<div class="row"><div><label>Project reference</label><input id="projectReference"></div><div><label>Engineer *</label><input id="engineer"></div></div>
-<div class="row"><div><label>Site name *</label><input id="siteName"></div><div><label>Rack name *</label><input id="rackName"></div></div>
-<label>Notes</label><input id="designNotes">
-<button class="run" onclick="saveDesign()">SAVE RACK DESIGN</button>
-<div id="saveStatus" class="note"></div>
-</section>
-<div class="row">
-<div><label>AC voltage (V)</label><input id="acVoltage" type="number" value="220" min="1" oninput="run()"></div>
-<div><label>Power calculation</label><select disabled><option>I = P / V</option></select></div>
-</div>
-<button class="run" onclick="run()">RUN DESIGN</button>
-<div class="formula">DC device → I = P / 48 V<br>AC device → I = P / 220 V<br>I per PSU = I total / PSU count</div>
-<p class="note">AC and DC devices can be mixed in the same rack. Each device independently uses its selected power type and corresponding voltage.</p>
-</section>
+    <div class="grid">
+        <section class="card">
+            <h2>System</h2>
+            <div class="row">
+                <div>
+                    <label>Rack capacity (U)</label>
+                    <input id="rack" type="number" value="42" min="1" oninput="run()">
+                </div>
+                <div>
+                    <label>DC voltage (V)</label>
+                    <input id="dcVoltage" type="number" value="48" min="1" oninput="run()">
+                </div>
+            </div>
 
-<section class="card">
-<h2>Device Database</h2>
-<div id="devices"></div>
-<button class="add" onclick="addDevice()">+ Add device</button>
-<p class="note">Power / Dev = power of one physical device. Quantity determines how many identical devices are installed. Rack U is the space occupied by one device.</p>
-</section>
-</div>
+            <section class="card">
+                <h2>Design record</h2>
+                <div class="row">
+                    <div>
+                        <label>Project reference</label>
+                        <input id="projectReference">
+                    </div>
+                    <div>
+                        <label>Engineer *</label>
+                        <input id="engineer">
+                    </div>
+                </div>
+                <div class="row">
+                    <div>
+                        <label>Site name *</label>
+                        <select id="siteName">
+                            <option value="">Select site</option>
+                            <option value="HQ">HQ</option>
+                            <option value="TGM">TGM</option>
+                            <option value="MKTM">MKTM</option>
+                            <option value="TNT">TNT</option>
+                            <option value="MNS">MNS</option>
+                            <option value="AST">AST</option>
+                            <option value="RMP">RMP</option>
+                            <option value="BNS">BNS</option>
+                            <option value="BRJ">BRJ</option>
+                            <option value="Alex">Alex</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Rack name *</label>
+                        <input id="rackName">
+                    </div>
+                </div>
+                <label>Notes</label>
+                <input id="designNotes">
+                <button class="run" onclick="saveDesign()">SAVE RACK DESIGN</button>
+                <div id="saveStatus" class="note"></div>
+            </section>
 
-<section class="card">
-<h2>Output</h2>
-<div class="metrics">
-<div class="metric">Installed<b id="mDevices">0</b></div>
-<div class="metric">Rack usage<b id="mRack">0/42 U</b></div>
-<div class="metric">Power<b id="mPower">0.00 kW</b></div>
-<div class="metric">Protected circuits<b id="mBreakers">0</b></div>
-</div>
-<div id="status" class="status">Ready.</div>
-</section>
+            <div class="row">
+                <div>
+                    <label>AC voltage (V)</label>
+                    <input id="acVoltage" type="number" value="220" min="1" oninput="run()">
+                </div>
+                <div>
+                    <label>Power calculation</label>
+                    <select disabled>
+                        <option>I = P / V</option>
+                    </select>
+                </div>
+            </div>
 
-<section class="card">
-<h2>Current &amp; Breaker Check</h2>
-<div style="overflow:auto">
-<table><thead><tr>
-<th>Device</th><th>Type</th><th>Power / Dev</th><th>Voltage</th><th>Total current</th><th>PSUs</th><th>Current / PSU</th><th>Breaker / PSU</th><th>Result</th>
-</tr></thead><tbody id="table"></tbody></table>
-</div>
-</section>
+            <button class="run" onclick="run()">RUN DESIGN</button>
 
-<section class="card">
-<h2>Power Supply → Circuit Breaker Mapping</h2>
-<div style="overflow:auto">
-<table><thead><tr><th>Device</th><th>Type</th><th>PSU</th><th>Circuit</th><th>Breaker</th><th>Current / PSU</th></tr></thead>
-<tbody id="mapping"></tbody></table>
-</div>
-</section>
+            <div class="formula">
+                DC device → I = P / 48 V<br>
+                AC device → I = P / 220 V<br>
+                I per PSU = I total / PSU count
+            </div>
 
-<section class="card">
-<h2>Checks</h2><div id="checks"></div>
-</section>
+            <p class="note">
+                AC and DC devices can be mixed in the same rack. Each device independently uses
+                its selected power type and corresponding voltage.
+            </p>
+        </section>
+
+        <section class="card">
+            <h2>Device Database</h2>
+            <div id="devices"></div>
+            <button class="add" onclick="addDevice()">+ Add device</button>
+            <p class="note">
+                Power / Dev = power of one physical device. Quantity determines how many
+                identical devices are installed. Rack U is the space occupied by one device.
+            </p>
+        </section>
+    </div>
+
+    <section class="card">
+        <h2>Output</h2>
+        <div class="metrics">
+            <div class="metric">Installed<b id="mDevices">0</b></div>
+            <div class="metric">Rack usage<b id="mRack">0/42 U</b></div>
+            <div class="metric">Power<b id="mPower">0.00 kW</b></div>
+            <div class="metric">Protected circuits<b id="mBreakers">0</b></div>
+        </div>
+        <div id="status" class="status">Ready.</div>
+    </section>
+
+    <section class="card">
+        <h2>Current &amp; Breaker Check</h2>
+        <div style="overflow:auto">
+            <table>
+                <thead>
+                <tr>
+                    <th>Device</th>
+                    <th>Type</th>
+                    <th>Power / Dev</th>
+                    <th>Voltage</th>
+                    <th>Total current</th>
+                    <th>PSUs</th>
+                    <th>Current / PSU</th>
+                    <th>Breaker / PSU</th>
+                    <th>Result</th>
+                </tr>
+                </thead>
+                <tbody id="table"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>Power Supply → Circuit Breaker Mapping</h2>
+        <div style="overflow:auto">
+            <table>
+                <thead>
+                <tr>
+                    <th>Device</th>
+                    <th>Type</th>
+                    <th>PSU</th>
+                    <th>Circuit</th>
+                    <th>Breaker</th>
+                    <th>Current / PSU</th>
+                </tr>
+                </thead>
+                <tbody id="mapping"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>Checks</h2>
+        <div id="checks"></div>
+    </section>
 </main>
 
 <script>
-let D=[
-{name:"Chassis",u:10,power:7,psu:2,qty:1,breaker:100,type:"DC"},
-{name:"Server",u:3,power:1,psu:2,qty:1,breaker:25,type:"DC"},
-{name:"Router",u:1,power:.5,psu:2,qty:1,breaker:20,type:"AC"},
-{name:"Switch",u:2,power:1.5,psu:2,qty:1,breaker:25,type:"AC"}
-];
-const breakers=[20,25,32,40,50,63,80,100,125];
+    let D = [
+        { name: "Chassis", u: 10, power: 7, psu: 2, qty: 1, breaker: 100, type: "DC" },
+        { name: "Server", u: 3, power: 1, psu: 2, qty: 1, breaker: 25, type: "DC" },
+        { name: "Router", u: 1, power: .5, psu: 2, qty: 1, breaker: 20, type: "AC" },
+        { name: "Switch", u: 2, power: 1.5, psu: 2, qty: 1, breaker: 25, type: "AC" }
+    ];
+    const breakers = [20, 25, 32, 40, 50, 63, 80, 100, 125];
 
-function esc(x){
-return String(x).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
-}
-function voltageFor(d){
-return d.type==="AC"
-? (+document.getElementById("acVoltage").value || 220)
-: (+document.getElementById("dcVoltage").value || 48);
-}
-function render(){
-// AC devices are always supplied by a PDU with a fixed 32 A allowable rating.
-D.forEach(d=>{if(d.type==="AC")d.breaker=32;});
-document.getElementById("devices").innerHTML=D.map((d,i)=>`
-<div class="device">
-<div class="devicehead">
-<b>${esc(d.name)}</b>
-<button class="remove" onclick="D.splice(${i},1);render();run()">Remove</button>
-</div>
-<div class="row">
-<div><label>Name</label><input value="${esc(d.name)}" onchange="D[${i}].name=this.value"></div>
-<div><label>Power type</label>
-<select onchange="D[${i}].type=this.value;if(this.value==='AC')D[${i}].breaker=32;render();run()">
-<option value="DC" ${d.type==="DC"?"selected":""}>DC — 48 V</option>
-<option value="AC" ${d.type==="AC"?"selected":""}>AC — 220 V</option>
-</select></div>
-</div>
-<div class="row">
-<div><label>Power / Dev (kW)</label><input type="number" step=".1" min="0" value="${d.power}" onchange="D[${i}].power=+this.value;run()"></div>
-<div><label>Rack U / Dev</label><input type="number" min="1" value="${d.u}" onchange="D[${i}].u=+this.value;run()"></div>
-</div>
-<div class="row">
-<div><label>Quantity / Devices</label><input type="number" min="0" value="${d.qty}" onchange="D[${i}].qty=+this.value;run()"></div>
-<div><label>PSUs / Device</label><input type="number" min="1" value="${d.psu}" onchange="D[${i}].psu=+this.value;run()"></div>
-</div>
-<div class="row">
-<div><label>Breaker / PSU</label>
-${d.type==="AC"?`<input value="32 A — fixed PDU limit" readonly title="AC devices use the fixed 32 A PDU allowable rating">`:`<select onchange="D[${i}].breaker=+this.value;run()">
-${breakers.map(x=>`<option value="${x}" ${x==d.breaker?"selected":""}>${x} A</option>`).join("")}
-</select>`}</div>
-<div><label>Voltage used</label><input value="${voltageFor(d).toFixed(0)} V" readonly></div>
-</div>
-</div>`).join("");
-}
-function addDevice(){
-D.push({name:"New Device",u:1,power:1,psu:2,qty:1,breaker:25,type:"DC"});
-render();run();
-}
-async function saveDesign(){
-const status=document.getElementById("saveStatus");
-status.textContent="Saving...";
-const payload={
-project_reference:document.getElementById("projectReference").value,
-site_name:document.getElementById("siteName").value,
-rack_name:document.getElementById("rackName").value,
-engineer:document.getElementById("engineer").value,
-notes:document.getElementById("designNotes").value,
-rack_capacity_u:+document.getElementById("rack").value,
-dc_voltage_v:+document.getElementById("dcVoltage").value,
-ac_voltage_v:+document.getElementById("acVoltage").value,
-devices:D
-};
-try{
-const response=await fetch("{% url 'rack_design:save_design' %}",{method:"POST",headers:{"Content-Type":"application/json","X-CSRFToken":document.querySelector("#csrfForm input").value},body:JSON.stringify(payload)});
-const result=await response.json();
-status.className=response.ok?"status good":"status bad";
-status.textContent=response.ok?`✓ ${result.message}`:`❌ ${result.error}`;
-}catch(error){status.className="status bad";status.textContent="❌ The design could not be saved.";}
-}
-function run(){
-const rack=+document.getElementById("rack").value||42;
-let used=0,totalPower=0,installed=0,circuits=0,maps=[],failure=null;
+    function esc(x) {
+        return String(x)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;");
+    }
 
-document.getElementById("table").innerHTML=D.map(d=>{
-if(d.type==="AC")d.breaker=32;
-const V=voltageFor(d);
-const total=d.power*1000/V;
-const per=total/d.psu;
-const ok=per<=d.breaker;
-return `<tr>
-<td>${esc(d.name)}</td>
-<td><span class="badge ${d.type==="AC"?"ac":"dc"}">${d.type}</span></td>
-<td>${d.power.toFixed(2)} kW</td><td>${V.toFixed(0)} V</td>
-<td>${total.toFixed(2)} A</td><td>${d.psu}</td><td>${per.toFixed(2)} A</td>
-<td>${d.breaker} A</td><td class="${ok?"ok":"fail"}">${ok?"✓ OK":"❌ FAIL"}</td>
-</tr>`;
-}).join("");
+    function voltageFor(d) {
+        return d.type === "AC"
+            ? (+document.getElementById("acVoltage").value || 220)
+            : (+document.getElementById("dcVoltage").value || 48);
+    }
 
-outer:
-for(const d of D){
-if(d.type==="AC")d.breaker=32;
-const V=voltageFor(d);
-const total=d.power*1000/V;
-const per=total/d.psu;
-for(let q=0;q<d.qty;q++){
-if(used+d.u>rack){
-failure=[d.name,"RACK CAPACITY",`Only ${rack-used} U remains.`];
-break outer;
-}
-if(per>d.breaker){
-failure=[d.name,d.type==="AC"?"PDU LIMIT":"CIRCUIT BREAKER",`${per.toFixed(2)} A per PSU is higher than the ${d.type==="AC"?"fixed PDU limit":"selected breaker"} of ${d.breaker} A.`];
-break outer;
-}
-for(let p=1;p<=d.psu;p++){
-circuits++;
-maps.push([d.name,d.type,p,circuits,d.breaker,per]);
-}
-used+=d.u;
-totalPower+=d.power;
-installed++;
-}
-}
+    function render() {
+        // AC devices are always supplied by a PDU with a fixed 32 A allowable rating.
+        D.forEach(d => { if (d.type === "AC") d.breaker = 32; });
 
-document.getElementById("mDevices").textContent=installed;
-document.getElementById("mRack").textContent=`${used}/${rack} U`;
-document.getElementById("mPower").textContent=`${totalPower.toFixed(2)} kW`;
-document.getElementById("mBreakers").textContent=circuits;
+        document.getElementById("devices").innerHTML = D.map((d, i) => `
+            <div class="device">
+                <div class="devicehead">
+                    <b>${esc(d.name)}</b>
+                    <button class="remove" onclick="D.splice(${i},1);render();run()">Remove</button>
+                </div>
+                <div class="row">
+                    <div>
+                        <label>Name</label>
+                        <input value="${esc(d.name)}" onchange="D[${i}].name=this.value">
+                    </div>
+                    <div>
+                        <label>Power type</label>
+                        <select onchange="D[${i}].type=this.value;if(this.value==='AC')D[${i}].breaker=32;render();run()">
+                            <option value="DC" ${d.type === "DC" ? "selected" : ""}>DC — 48 V</option>
+                            <option value="AC" ${d.type === "AC" ? "selected" : ""}>AC — 220 V</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div>
+                        <label>Power / Dev (kW)</label>
+                        <input type="number" step=".1" min="0" value="${d.power}" onchange="D[${i}].power=+this.value;run()">
+                    </div>
+                    <div>
+                        <label>Rack U / Dev</label>
+                        <input type="number" min="1" value="${d.u}" onchange="D[${i}].u=+this.value;run()">
+                    </div>
+                </div>
+                <div class="row">
+                    <div>
+                        <label>Quantity / Devices</label>
+                        <input type="number" min="0" value="${d.qty}" onchange="D[${i}].qty=+this.value;run()">
+                    </div>
+                    <div>
+                        <label>PSUs / Device</label>
+                        <input type="number" min="1" value="${d.psu}" onchange="D[${i}].psu=+this.value;run()">
+                    </div>
+                </div>
+                <div class="row">
+                    <div>
+                        <label>Breaker / PSU</label>
+                        ${d.type === "AC"
+                            ? `<input value="32 A — fixed PDU limit" readonly title="AC devices use the fixed 32 A PDU allowable rating">`
+                            : `<select onchange="D[${i}].breaker=+this.value;run()">
+                                ${breakers.map(x => `<option value="${x}" ${x == d.breaker ? "selected" : ""}>${x} A</option>`).join("")}
+                               </select>`}
+                    </div>
+                    <div>
+                        <label>Voltage used</label>
+                        <input value="${voltageFor(d).toFixed(0)} V" readonly>
+                    </div>
+                </div>
+            </div>
+        `).join("");
+    }
 
-const s=document.getElementById("status");
-if(failure){
-s.className="status bad";
-s.textContent=`❌ ${failure[0]} cannot be added — ${failure[1]}: ${failure[2]}`;
-}else{
-s.className="status good";
-s.textContent="✓ All requested devices pass the rack-capacity and breaker checks.";
-}
+    function addDevice() {
+        D.push({ name: "New Device", u: 1, power: 1, psu: 2, qty: 1, breaker: 25, type: "DC" });
+        render();
+        run();
+    }
 
-document.getElementById("mapping").innerHTML=maps.map(m=>`
-<tr><td>${esc(m[0])}</td><td><span class="badge ${m[1]==="AC"?"ac":"dc"}">${m[1]}</span></td>
-<td>PSU ${m[2]}</td><td>Circuit ${m[3]}</td><td>${m[4]} A</td><td>${m[5].toFixed(2)} A</td></tr>
-`).join("");
+    async function saveDesign() {
+        const status = document.getElementById("saveStatus");
+        status.textContent = "Saving...";
 
-document.getElementById("checks").innerHTML=`
-<p><b class="${used<=rack?"ok":"fail"}">${used<=rack?"✓":"❌"} Rack capacity</b> — ${used}/${rack} U</p>
-<p><b>✓ DC calculation</b> — DC devices use I = P / ${(+document.getElementById("dcVoltage").value||48).toFixed(0)} V.</p>
-<p><b>✓ AC calculation</b> — AC devices use I = P / ${(+document.getElementById("acVoltage").value||220).toFixed(0)} V.</p>
-<p><b>✓ Breaker / PDU check</b> — AC devices use the fixed 32 A PDU limit; DC devices use the selected breaker rating.</p>`;
-}
-render();
-run();
+        const payload = {
+            project_reference: document.getElementById("projectReference").value,
+            site_name: document.getElementById("siteName").value,
+            rack_name: document.getElementById("rackName").value,
+            engineer: document.getElementById("engineer").value,
+            notes: document.getElementById("designNotes").value,
+            rack_capacity_u: +document.getElementById("rack").value,
+            dc_voltage_v: +document.getElementById("dcVoltage").value,
+            ac_voltage_v: +document.getElementById("acVoltage").value,
+            devices: D
+        };
+
+        try {
+            const response = await fetch("{% url 'rack_design:save_design' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": document.querySelector("#csrfForm input").value
+                },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            status.className = response.ok ? "status good" : "status bad";
+            status.textContent = response.ok ? `✓ ${result.message}` : `❌ ${result.error}`;
+        } catch (error) {
+            status.className = "status bad";
+            status.textContent = "❌ The design could not be saved.";
+        }
+    }
+
+    function run() {
+        const rack = +document.getElementById("rack").value || 42;
+        let used = 0, totalPower = 0, installed = 0, circuits = 0, maps = [], failure = null;
+
+        document.getElementById("table").innerHTML = D.map(d => {
+            if (d.type === "AC") d.breaker = 32;
+            const V = voltageFor(d);
+            const total = d.power * 1000 / V;
+            const per = total / d.psu;
+            const ok = per <= d.breaker;
+            return `<tr>
+                <td>${esc(d.name)}</td>
+                <td><span class="badge ${d.type === "AC" ? "ac" : "dc"}">${d.type}</span></td>
+                <td>${d.power.toFixed(2)} kW</td>
+                <td>${V.toFixed(0)} V</td>
+                <td>${total.toFixed(2)} A</td>
+                <td>${d.psu}</td>
+                <td>${per.toFixed(2)} A</td>
+                <td>${d.breaker} A</td>
+                <td class="${ok ? "ok" : "fail"}">${ok ? "✓ OK" : "❌ FAIL"}</td>
+            </tr>`;
+        }).join("");
+
+        outer:
+        for (const d of D) {
+            if (d.type === "AC") d.breaker = 32;
+            const V = voltageFor(d);
+            const total = d.power * 1000 / V;
+            const per = total / d.psu;
+
+            for (let q = 0; q < d.qty; q++) {
+                if (used + d.u > rack) {
+                    failure = [d.name, "RACK CAPACITY", `Only ${rack - used} U remains.`];
+                    break outer;
+                }
+                if (per > d.breaker) {
+                    failure = [
+                        d.name,
+                        d.type === "AC" ? "PDU LIMIT" : "CIRCUIT BREAKER",
+                        `${per.toFixed(2)} A per PSU is higher than the ${d.type === "AC" ? "fixed PDU limit" : "selected breaker"} of ${d.breaker} A.`
+                    ];
+                    break outer;
+                }
+                for (let p = 1; p <= d.psu; p++) {
+                    circuits++;
+                    maps.push([d.name, d.type, p, circuits, d.breaker, per]);
+                }
+                used += d.u;
+                totalPower += d.power;
+                installed++;
+            }
+        }
+
+        document.getElementById("mDevices").textContent = installed;
+        document.getElementById("mRack").textContent = `${used}/${rack} U`;
+        document.getElementById("mPower").textContent = `${totalPower.toFixed(2)} kW`;
+        document.getElementById("mBreakers").textContent = circuits;
+
+        const s = document.getElementById("status");
+        if (failure) {
+            s.className = "status bad";
+            s.textContent = `❌ ${failure[0]} cannot be added — ${failure[1]}: ${failure[2]}`;
+        } else {
+            s.className = "status good";
+            s.textContent = "✓ All requested devices pass the rack-capacity and breaker checks.";
+        }
+
+        document.getElementById("mapping").innerHTML = maps.map(m => `
+            <tr>
+                <td>${esc(m[0])}</td>
+                <td><span class="badge ${m[1] === "AC" ? "ac" : "dc"}">${m[1]}</span></td>
+                <td>PSU ${m[2]}</td>
+                <td>Circuit ${m[3]}</td>
+                <td>${m[4]} A</td>
+                <td>${m[5].toFixed(2)} A</td>
+            </tr>
+        `).join("");
+
+        document.getElementById("checks").innerHTML = `
+            <p><b class="${used <= rack ? "ok" : "fail"}">${used <= rack ? "✓" : "❌"} Rack capacity</b> — ${used}/${rack} U</p>
+            <p><b>✓ DC calculation</b> — DC devices use I = P / ${(+document.getElementById("dcVoltage").value || 48).toFixed(0)} V.</p>
+            <p><b>✓ AC calculation</b> — AC devices use I = P / ${(+document.getElementById("acVoltage").value || 220).toFixed(0)} V.</p>
+            <p><b>✓ Breaker / PDU check</b> — AC devices use the fixed 32 A PDU limit; DC devices use the selected breaker rating.</p>
+        `;
+    }
+
+    render();
+    run();
 </script>
 </body>
 </html>
