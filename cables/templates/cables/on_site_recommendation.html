@@ -6,10 +6,11 @@
   <title>On-Site Recommendation · Vodafone Technology</title>
   <link rel="stylesheet" href="{% static 'cables/css/on_site.css' %}">
   <link rel="stylesheet" href="{% static 'cables/css/on_site_modes.css' %}">
+  <link rel="icon" type="image/png" href="{% static 'portal/images/vodafone.png' %}">
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="{% url 'portal:home' %}"><span>V</span><div><strong>Vodafone Technology</strong><small>On-Site Recommendation</small></div></a>
+    <a class="brand" href="{% url 'portal:home' %}"><img src="{% static 'portal/images/vodafone.png' %}" alt="Vodafone logo" class="brand-logo"><div><strong>Vodafone Technology</strong><small>On-Site Recommendation</small></div></a>
     <a class="engineer-link" href="{% url 'cables:dashboard' %}">ENGINEERING VIEW</a>
   </header>
   <main>

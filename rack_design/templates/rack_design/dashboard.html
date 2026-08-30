@@ -1,9 +1,11 @@
+{% load static %}   
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Vodafone AC/DC Rack Design Tool</title>
+    <link rel="icon" type="image/png" href="{% static 'portal/images/vodafone.png' %}">
     <style>
         body {
             margin: 0;
@@ -30,17 +32,7 @@
             text-decoration: none;
         }
 
-        .portalbrand i {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: #e60000;
-            color: #fff;
-            display: grid;
-            place-items: center;
-            font-size: 19px;
-            font-weight: 900;
-        }
+        .portalbrand-logo{display:block;width:38px;height:38px;max-width:38px;max-height:38px;border-radius:50%;object-fit:contain;background:#fff}
 
         .portalbrand strong,
         .portalbrand small {
@@ -100,12 +92,10 @@
             margin-bottom: 17px;
         }
 
-        .row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
+        .card .card{margin:18px 0}
 
+        .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+        
         label {
             display: block;
             font-size: 12px;
@@ -279,10 +269,7 @@
 <body>
 
 <nav class="portalnav">
-    <a class="portalbrand" href="{% url 'portal:home' %}">
-        <i>V</i>
-        <span><strong>Vodafone Technology</strong><small>Energy Engineering Portal</small></span>
-    </a>
+    <a class="portalbrand" href="{% url 'portal:home' %}"><img src="{% static 'portal/images/vodafone.png' %}" alt="Vodafone logo" class="portalbrand-logo"><span><strong>Vodafone Technology</strong><small>Energy Engineering Portal</small></span></a>
     <a class="homebtn" href="{% url 'portal:home' %}">← All tools</a>
 </nav>
 

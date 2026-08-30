@@ -7,10 +7,11 @@
   <title>Vodafone Energy Engineering Portal</title>
   <link rel="stylesheet" href="{% static 'portal/css/portal.css' %}">
   <link rel="stylesheet" href="{% static 'portal/css/guide.css' %}">
+  <link rel="icon" type="image/png" href="{% static 'portal/images/vodafone.png' %}">
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="{% url 'portal:home' %}"><span>V</span><div><strong>Vodafone Technology</strong><small>Energy Engineering Portal</small></div></a>
+    <a class="brand" href="{% url 'portal:home' %}"><img src="{% static 'portal/images/vodafone.png' %}" alt="Vodafone logo" class="brand-logo"><div><strong>Vodafone Technology</strong><small>Energy Engineering Portal</small></div></a>
     <a href="{% url 'portal:history' %}" style="text-decoration:none"><b>VIEW SAVED DESIGNS</b></a>
   </header>
 
