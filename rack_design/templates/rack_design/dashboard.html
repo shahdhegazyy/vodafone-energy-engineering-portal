@@ -303,8 +303,8 @@
                     <input id="rack" type="number" value="42" min="1" oninput="run()">
                 </div>
                 <div>
-                    <label>DC voltage (V)</label>
-                    <input id="dcVoltage" type="number" value="48" min="1" oninput="run()">
+                    <label>DC voltage (V) — fixed</label>
+                    <input id="dcVoltage" type="text" value="48 V" readonly aria-readonly="true" title="Fixed DC system voltage">
                 </div>
             </div>
 
@@ -350,8 +350,8 @@
 
             <div class="row">
                 <div>
-                    <label>AC voltage (V)</label>
-                    <input id="acVoltage" type="number" value="220" min="1" oninput="run()">
+                    <label>AC voltage (V) — fixed</label>
+                    <input id="acVoltage" type="text" value="220 V" readonly aria-readonly="true" title="Fixed AC system voltage">
                 </div>
                 <div>
                     <label>Power calculation</label>
@@ -452,6 +452,8 @@
         { name: "Switch", u: 2, power: 1.5, psu: 2, qty: 1, breaker: 25, type: "AC" }
     ];
     const breakers = [20, 25, 32, 40, 50, 63, 80, 100, 125];
+    const DC_VOLTAGE = 48;
+    const AC_VOLTAGE = 220;
 
     function esc(x) {
         return String(x)
@@ -462,9 +464,7 @@
     }
 
     function voltageFor(d) {
-        return d.type === "AC"
-            ? (+document.getElementById("acVoltage").value || 220)
-            : (+document.getElementById("dcVoltage").value || 48);
+        return d.type === "AC" ? AC_VOLTAGE : DC_VOLTAGE;
     }
 
     function render() {
@@ -545,8 +545,8 @@
             engineer: document.getElementById("engineer").value,
             notes: document.getElementById("designNotes").value,
             rack_capacity_u: +document.getElementById("rack").value,
-            dc_voltage_v: +document.getElementById("dcVoltage").value,
-            ac_voltage_v: +document.getElementById("acVoltage").value,
+            dc_voltage_v: DC_VOLTAGE,
+            ac_voltage_v: AC_VOLTAGE,
             devices: D
         };
 
@@ -648,8 +648,8 @@
 
         document.getElementById("checks").innerHTML = `
             <p><b class="${used <= rack ? "ok" : "fail"}">${used <= rack ? "✓" : "❌"} Rack capacity</b> — ${used}/${rack} U</p>
-            <p><b>✓ DC calculation</b> — DC devices use I = P / ${(+document.getElementById("dcVoltage").value || 48).toFixed(0)} V.</p>
-            <p><b>✓ AC calculation</b> — AC devices use I = P / ${(+document.getElementById("acVoltage").value || 220).toFixed(0)} V.</p>
+            <p><b>✓ DC calculation</b> — DC devices use I = P / ${DC_VOLTAGE.toFixed(0)} V.</p>
+            <p><b>✓ AC calculation</b> — AC devices use I = P / ${AC_VOLTAGE.toFixed(0)} V.</p>
             <p><b>✓ Breaker / PDU check</b> — AC devices use the fixed 32 A PDU limit; DC devices use the selected breaker rating.</p>
         `;
     }

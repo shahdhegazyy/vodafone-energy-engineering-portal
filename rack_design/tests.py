@@ -58,3 +58,20 @@ class RackDesignDatabaseTests(TestCase):
         self.assertEqual(record.devices[0]["breaker"], 32.0)
         self.assertFalse(record.devices[0]["breaker_pass"])
         self.assertEqual(record.result_status, "FAIL")
+
+    def test_client_cannot_override_fixed_system_voltages(self):
+        payload = {
+            "site_name": "Cairo DC", "rack_name": "Rack Fixed", "engineer": "Engineer",
+            "rack_capacity_u": 42, "dc_voltage_v": 500, "ac_voltage_v": 1000,
+            "devices": [{"name": "Server", "u": 2, "power": 1, "psu": 2,
+                         "qty": 1, "breaker": 25, "type": "DC"}],
+        }
+        response = self.client.post(
+            reverse("rack_design:save_design"), json.dumps(payload),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        record = RackDesign.objects.get()
+        self.assertEqual(record.dc_voltage_v, 48)
+        self.assertEqual(record.ac_voltage_v, 220)
+        self.assertAlmostEqual(record.devices[0]["current_per_psu"], 10.41667, places=4)
