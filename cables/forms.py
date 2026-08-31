@@ -7,7 +7,7 @@ SITE_NAME_CHOICES = [
     ("TNT", "TNT"),
     ("MNS", "MNS"),
     ("AST", "AST"),
-    ("RMD", "RMD"),
+    ("RMP", "RMP"),
     ("BNS", "BNS"),
     ("BRJ", "BRJ"),
     ("Alex", "Alex"),
