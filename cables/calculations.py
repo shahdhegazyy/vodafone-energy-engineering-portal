@@ -84,6 +84,17 @@ def calculate_at_temperature(load_current_a, length_m, temperature_c=25.0, volta
             "overall_pass": voltage_drop <= voltage_drop_limit_v,
         })
     recommendation = next((row for row in results if row["overall_pass"]), None)
+
+    exceeds_limit = False
+    is_standard_mode = voltage_drop_limit_v == 1.5
+    if recommendation is None and is_standard_mode and length_m <= 100:
+        # Standard 1.5 V mode only: no approved size meets the voltage-drop
+        # limit, but the route is still within the 100 m field ceiling.
+        # Fall back to the largest approved cable (70 mm²) for this breaker
+        # tier and flag it as exceeding the limit.
+        recommendation = max(results, key=lambda row: row["size_mm2"])
+        exceeds_limit = True
+
     selection = {
         "load_current_a": load_current_a, "length_m": length_m,
         "temperature_c": temperature_c, "resistivity": resistivity,
@@ -91,6 +102,7 @@ def calculate_at_temperature(load_current_a, length_m, temperature_c=25.0, volta
         "safety_margin_percent": SAFETY_MARGIN * 100,
         "required_breaker_a": required_breaker_a,
         "selected_breaker_a": selected_breaker_a,
+        "exceeds_limit": exceeds_limit,
     }
     return selection, results, recommendation
 

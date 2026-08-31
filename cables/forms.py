@@ -7,32 +7,32 @@ SITE_NAME_CHOICES = [
     ("TNT", "TNT"),
     ("MNS", "MNS"),
     ("AST", "AST"),
-    ("RMP", "RMP"),
+    ("RMD", "RMD"),
     ("BNS", "BNS"),
     ("BRJ", "BRJ"),
     ("Alex", "Alex"),
 ]
 
 class CableDesignForm(forms.Form):
-    project_reference = forms.CharField(max_length=100, required=False, label="Project reference")
+    project_reference = forms.CharField(max_length=100, required=False, label="Project Reference")
     site_name = forms.ChoiceField(
         choices=SITE_NAME_CHOICES,
-        label="Site name",
+        label="Site Name",
     )
-    rack_name = forms.CharField(max_length=150, required=False, label="Rack name")
+    rack_name = forms.CharField(max_length=150, required=False, label="Rack Name")
     engineer = forms.CharField(max_length=150, required=False, label="Engineer")
     notes = forms.CharField(required=False, label="Notes", widget=forms.TextInput())
     load_current_a = forms.FloatField(
-        min_value=0.01, max_value=80, initial=24, label="Load current (A)",
+        min_value=0.01, max_value=80, initial=24, label="Load Current (A)",
         help_text="Enter the equipment DC load current. Approved Phase 1 range: up to 80 A.",
     )
     length_m = forms.FloatField(
-        min_value=0.01, initial=100, label="One-way cable length (m)",
+        min_value=0.01, initial=100, label="One-way Cable Length (m)",
     )
-    temperature_below_25 = forms.FloatField(initial=20, label="Conductor temperature below 25°C")
-    temperature_25_30 = forms.FloatField(initial=27, label="Conductor temperature 25°C to below 30°C")
-    temperature_30_60 = forms.FloatField(initial=45, label="Conductor temperature 30°C to 60°C")
-    temperature_above_60 = forms.FloatField(initial=70, label="Conductor temperature above 60°C")
+    temperature_below_25 = forms.FloatField(initial=20, label="Conductor Temperature Below 25°C")
+    temperature_25_30 = forms.FloatField(initial=27, label="Conductor Temperature 25°C to Below 30°C")
+    temperature_30_60 = forms.FloatField(initial=45, label="Conductor Temperature 30°C to 60°C")
+    temperature_above_60 = forms.FloatField(initial=70, label="Conductor Temperature Above 60°C")
 
     def clean(self):
         cleaned = super().clean()
@@ -51,7 +51,7 @@ class CableDesignForm(forms.Form):
 
 class BatchCableUploadForm(forms.Form):
     workbook = forms.FileField(
-        label="Completed batch workbook",
+        label="Completed Batch Workbook",
         help_text="Upload the completed .xlsx template. Maximum file size: 5 MB.",
     )
 
@@ -66,7 +66,7 @@ class BatchCableUploadForm(forms.Form):
 
 class OnSiteRecommendationForm(forms.Form):
     voltage_drop_mode = forms.ChoiceField(
-        label="Selection method",
+        label="Selection Method",
         choices=(
             ("standard", "Standard — fixed 1.5 V limit"),
             ("optimized", "Optimized — fixed 3 V limit (under testing)"),
@@ -75,15 +75,15 @@ class OnSiteRecommendationForm(forms.Form):
     )
     site_name = forms.ChoiceField(
         choices=SITE_NAME_CHOICES,
-        label="Site name",
+        label="Site Name",
     )
-    rack_name = forms.CharField(max_length=150, label="Rack name")
-    technician = forms.CharField(max_length=150, label="Technician name")
+    rack_name = forms.CharField(max_length=150, label="Rack Name")
+    technician = forms.CharField(max_length=150, label="Technician Name")
     load_current_a = forms.FloatField(
-        min_value=0.01, max_value=80, label="Load current (A)",
+        min_value=0.01, max_value=80, label="Load Current (A)",
         help_text="Enter the equipment DC load current (maximum 80 A).",
     )
     length_m = forms.FloatField(
-        min_value=0.01, label="One-way cable length (m)",
+        min_value=0.01, label="One-way Cable Length (m)",
         help_text="Measure the route from the source to the rack.",
     )

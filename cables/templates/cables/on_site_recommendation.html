@@ -19,7 +19,7 @@
     {% if error %}<div class="error">{{ error }}</div>{% endif %}
     <section class="workspace">
       <article class="input-card">
-        <div class="card-title"><span>01</span><div><h2>Method and essential information</h2><small>Choose a method, then complete five fields</small></div></div>
+        <div class="card-title"><span>01</span><div><h2>Method and Essential Information</h2><small>Choose a method, then complete five fields</small></div></div>
         <form method="post">{% csrf_token %}
           {% for field in form %}{% if field.name == "voltage_drop_mode" %}<fieldset><legend>{{ field.label }}</legend>{{ field }}{% for e in field.errors %}<em>{{ e }}</em>{% endfor %}</fieldset>{% else %}<label>{{ field.label }}{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{% for e in field.errors %}<em>{{ e }}</em>{% endfor %}</label>{% endif %}{% endfor %}
           <button type="submit" name="action" value="calculate">Get recommendation</button>
@@ -27,9 +27,11 @@
         <div class="fixed"><b>Fixed assumptions</b><span>Copper conductor · 25°C · Selected voltage-drop limit · 25% CB safety margin</span></div>
       </article>
       <article class="result-card">
-        <div class="card-title"><span>02</span><div><h2>Recommended installation</h2><small>Immediate field result</small></div></div>
+        <div class="card-title"><span>02</span><div><h2>Recommended Installation</h2><small>Immediate field result</small></div></div>
         {% if selection %}{% if recommendation %}
-          <div class="pass">PASS</div><p class="eyebrow">RECOMMENDED COPPER CABLE</p>
+          {% if selection.exceeds_limit %}<div class="pass" style="background:#fde4df;color:#9b3026">EXCEEDS LIMIT</div>{% else %}<div class="pass">PASS</div>{% endif %}
+          <p class="eyebrow">RECOMMENDED COPPER CABLE</p>
+          {% if selection.exceeds_limit %}<div class="method" style="background:#fde4df;color:#9b3026;margin:16px 26px 0"><b>ENGINEERING REVIEW REQUIRED</b><span>This is the largest approved cable, but the voltage drop still exceeds the {{ selection.voltage_drop_limit_v|floatformat:1 }} V limit at this length. Ask an engineer to review before installing.</span></div>{% endif %}
           {% if selected_mode == "optimized" %}<div class="method optimized"><b>OPTIMIZED · 3 V LIMIT</b><span>Under testing — engineering validation required</span></div>{% else %}<div class="method standard"><b>STANDARD · 1.5 V LIMIT</b><span>Established on-site selection method</span></div>{% endif %}
           <div class="cable-size">{{ recommendation.size_mm2|floatformat:0 }} <small>mm²</small></div>
           <div class="metrics">
