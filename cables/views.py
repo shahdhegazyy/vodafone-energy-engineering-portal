@@ -123,38 +123,104 @@ def on_site_recommendation(request):
     form = OnSiteRecommendationForm(request.POST or None)
     selection = results = recommendation = None
     error = None
+
     if request.method == "POST" and form.is_valid():
         try:
             mode = form.cleaned_data["voltage_drop_mode"]
             voltage_drop_limit = 1.5 if mode == "standard" else 3.0
+
             selection, results, recommendation = calculate_at_temperature(
-                form.cleaned_data["load_current_a"], form.cleaned_data["length_m"],
-                25.0, voltage_drop_limit,
+                form.cleaned_data["load_current_a"],
+                form.cleaned_data["length_m"],
+                25.0,
+                voltage_drop_limit,
             )
+
+            # Standard method fallback:
+            # If no approved cable can maintain 1.5 V, show the largest
+            # available approved cable (70 mm²) for engineering review.
+            if mode == "standard" and recommendation is None and results:
+                recommendation = max(results, key=lambda row: row["size_mm2"]).copy()
+                recommendation["fallback_to_largest"] = True
+            elif recommendation:
+                recommendation["fallback_to_largest"] = False
+
             if request.POST.get("action") == "save":
+                is_fallback = bool(
+                    recommendation
+                    and recommendation.get("fallback_to_largest", False)
+                )
+
                 CableSelection.objects.create(
-                    project_reference="ON-SITE", site_name=form.cleaned_data["site_name"],
-                    rack_name=form.cleaned_data["rack_name"], engineer=form.cleaned_data["technician"],
-                    notes=("Created using On-Site Recommendation: "
-                           f"{'Standard 1.5 V' if mode == 'standard' else 'Optimized 3 V — under testing'}; "
-                           "fixed copper conductor at 25°C."),
-                    load_current_a=selection["load_current_a"], length_m=selection["length_m"],
-                    temperature_below_25=25, temperature_25_30=25,
-                    temperature_30_60=25, temperature_above_60=25,
+                    project_reference="ON-SITE",
+                    site_name=form.cleaned_data["site_name"],
+                    rack_name=form.cleaned_data["rack_name"],
+                    engineer=form.cleaned_data["technician"],
+                    notes=(
+                        "Created using On-Site Recommendation: "
+                        f"{'Standard 1.5 V' if mode == 'standard' else 'Optimized 3 V — under testing'}; "
+                        "fixed copper conductor at 25°C."
+                        + (
+                            " No cable maintained the 1.5 V limit; "
+                            "70 mm² was returned as the maximum available cable "
+                            "for engineering review."
+                            if is_fallback
+                            else ""
+                        )
+                    ),
+                    load_current_a=selection["load_current_a"],
+                    length_m=selection["length_m"],
+                    temperature_below_25=25,
+                    temperature_25_30=25,
+                    temperature_30_60=25,
+                    temperature_above_60=25,
                     required_breaker_a=selection["required_breaker_a"],
                     selected_breaker_a=selection["selected_breaker_a"],
-                    recommended_cable_mm2=recommendation["size_mm2"] if recommendation else None,
-                    worst_voltage_drop_v=recommendation["voltage_drop"] if recommendation else None,
-                    result_status="PASS" if recommendation else "NO MATCH",
-                    calculation_details={"mode": "on_site_recommendation", "selection_method": mode,
-                                         "voltage_drop_limit_v": voltage_drop_limit, "conductor": "copper",
-                                         "fixed_temperature_c": 25, "resistivity": selection["resistivity"]},
+                    recommended_cable_mm2=(
+                        recommendation["size_mm2"]
+                        if recommendation
+                        else None
+                    ),
+                    worst_voltage_drop_v=(
+                        recommendation["voltage_drop"]
+                        if recommendation
+                        else None
+                    ),
+                    result_status=(
+                        "REVIEW REQUIRED"
+                        if is_fallback
+                        else "PASS"
+                        if recommendation
+                        else "NO MATCH"
+                    ),
+                    calculation_details={
+                        "mode": "on_site_recommendation",
+                        "selection_method": mode,
+                        "voltage_drop_limit_v": voltage_drop_limit,
+                        "conductor": "copper",
+                        "fixed_temperature_c": 25,
+                        "resistivity": selection["resistivity"],
+                        "fallback_to_largest": is_fallback,
+                    },
                 )
-                messages.success(request, "On-site cable recommendation saved to the database.")
+
+                messages.success(
+                    request,
+                    "On-site cable recommendation saved to the database.",
+                )
+
         except ValueError as exc:
             error = str(exc)
+
     return render(request, "cables/on_site_recommendation.html", {
-        "form": form, "selection": selection, "results": results,
-        "recommendation": recommendation, "error": error,
-        "selected_mode": form.cleaned_data.get("voltage_drop_mode") if form.is_bound and form.is_valid() else None,
+        "form": form,
+        "selection": selection,
+        "results": results,
+        "recommendation": recommendation,
+        "error": error,
+        "selected_mode": (
+            form.cleaned_data.get("voltage_drop_mode")
+            if form.is_bound and form.is_valid()
+            else None
+        ),
     })

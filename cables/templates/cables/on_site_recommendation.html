@@ -6,11 +6,10 @@
   <title>On-Site Recommendation · Vodafone Technology</title>
   <link rel="stylesheet" href="{% static 'cables/css/on_site.css' %}">
   <link rel="stylesheet" href="{% static 'cables/css/on_site_modes.css' %}">
-  <link rel="icon" type="image/png" href="{% static 'portal/images/vodafone.png' %}">
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="{% url 'portal:home' %}"><img src="{% static 'portal/images/vodafone.png' %}" alt="Vodafone logo" class="brand-logo"><div><strong>Vodafone Technology</strong><small>On-Site Recommendation</small></div></a>
+    <a class="brand" href="{% url 'portal:home' %}"><span>V</span><div><strong>Vodafone Technology</strong><small>On-Site Recommendation</small></div></a>
     <a class="engineer-link" href="{% url 'cables:dashboard' %}">ENGINEERING VIEW</a>
   </header>
   <main>
@@ -28,19 +27,110 @@
       </article>
       <article class="result-card">
         <div class="card-title"><span>02</span><div><h2>Recommended installation</h2><small>Immediate field result</small></div></div>
-        {% if selection %}{% if recommendation %}
-          <div class="pass">PASS</div><p class="eyebrow">RECOMMENDED COPPER CABLE</p>
-          {% if selected_mode == "optimized" %}<div class="method optimized"><b>OPTIMIZED · 3 V LIMIT</b><span>Under testing — engineering validation required</span></div>{% else %}<div class="method standard"><b>STANDARD · 1.5 V LIMIT</b><span>Established on-site selection method</span></div>{% endif %}
-          <div class="cable-size">{{ recommendation.size_mm2|floatformat:0 }} <small>mm²</small></div>
-          <div class="metrics">
-            <div><small>Circuit breaker</small><strong>{{ selection.selected_breaker_a|floatformat:0 }} A</strong></div>
-            <div><small>Voltage drop</small><strong>{{ recommendation.voltage_drop|floatformat:2 }} V</strong></div>
-            <div><small>Maximum route</small><strong>{{ recommendation.maximum_length|floatformat:2 }} m</strong></div>
-            <div><small>Voltage-drop limit</small><strong>{{ selection.voltage_drop_limit_v|floatformat:1 }} V</strong></div>
-          </div>
-          <form method="post" class="save-form">{% csrf_token %}{% for field in form %}<input type="hidden" name="{{ field.name }}" value="{{ field.value|default_if_none:'' }}">{% endfor %}<button type="submit" name="action" value="save">Save recommendation</button></form>
-        {% else %}<div class="no-match"><b>No approved cable found</b><span>The route cannot meet the selected {{ selection.voltage_drop_limit_v|floatformat:1 }} V limit using the approved cable list. Ask an engineer to review it.</span></div>{% endif %}
-        {% else %}<div class="empty"><b>Your result will appear here</b><span>Choose a selection method, complete the five fields and select “Get recommendation”.</span></div>{% endif %}
+      {% if selection %}
+  {% if recommendation %}
+
+    {% if recommendation.fallback_to_largest %}
+      <div class="review-required">MAXIMUM AVAILABLE · REVIEW REQUIRED</div>
+      <p class="eyebrow">MAXIMUM APPROVED COPPER CABLE</p>
+    {% else %}
+      <div class="pass">PASS</div>
+      <p class="eyebrow">RECOMMENDED COPPER CABLE</p>
+    {% endif %}
+
+    {% if selected_mode == "optimized" %}
+      <div class="method optimized">
+        <b>OPTIMIZED · 3 V LIMIT</b>
+        <span>Under testing — engineering validation required</span>
+      </div>
+    {% else %}
+      <div class="method standard">
+        <b>STANDARD · 1.5 V LIMIT</b>
+        {% if recommendation.fallback_to_largest %}
+          <span>Reference-sheet range exceeded</span>
+        {% else %}
+          <span>Established on-site selection method</span>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="cable-size">
+      {{ recommendation.size_mm2|floatformat:0 }}
+      <small>mm²</small>
+    </div>
+
+    {% if recommendation.fallback_to_largest %}
+      <div class="fallback-warning">
+        <b>The standard reference-sheet range has been exceeded.</b>
+        <span>
+          No approved cable can maintain the 1.5 V limit for this current
+          and route length. The maximum approved cable, 70 mm², is shown
+          for engineering review.
+        </span>
+      </div>
+    {% endif %}
+
+    <div class="metrics">
+      <div>
+        <small>Circuit breaker</small>
+        <strong>{{ selection.selected_breaker_a|floatformat:0 }} A</strong>
+      </div>
+
+      <div>
+        <small>Calculated voltage drop</small>
+        <strong>{{ recommendation.voltage_drop|floatformat:2 }} V</strong>
+      </div>
+
+      <div>
+        <small>Maximum route at selected limit</small>
+        <strong>{{ recommendation.maximum_length|floatformat:2 }} m</strong>
+      </div>
+
+      <div>
+        <small>Voltage-drop limit</small>
+        <strong>{{ selection.voltage_drop_limit_v|floatformat:1 }} V</strong>
+      </div>
+    </div>
+
+    <form method="post" class="save-form">
+      {% csrf_token %}
+
+      {% for field in form %}
+        <input
+          type="hidden"
+          name="{{ field.name }}"
+          value="{{ field.value|default_if_none:'' }}"
+        >
+      {% endfor %}
+
+      <button type="submit" name="action" value="save">
+        {% if recommendation.fallback_to_largest %}
+          Save for engineering review
+        {% else %}
+          Save recommendation
+        {% endif %}
+      </button>
+    </form>
+
+  {% else %}
+    <div class="no-match">
+      <b>No approved cable found</b>
+      <span>
+        The route cannot meet the selected
+        {{ selection.voltage_drop_limit_v|floatformat:1 }} V limit using
+        the approved cable list. Ask an engineer to review it.
+      </span>
+    </div>
+  {% endif %}
+{% else %}
+  <div class="empty">
+    <b>Your result will appear here</b>
+    <span>
+      Choose a selection method, complete the five fields and select
+      “Get recommendation”.
+    </span>
+  </div>
+{% endif %}
       </article>
     </section>
   </main>

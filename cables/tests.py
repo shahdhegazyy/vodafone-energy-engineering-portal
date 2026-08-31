@@ -102,7 +102,7 @@ class CableSelectionDatabaseTests(TestCase):
     def test_calculated_selection_can_be_saved(self):
         response = self.client.post(reverse("cables:dashboard"), {
             "action": "save", "project_reference": "PRJ-001",
-            "site_name": "Cairo DC", "rack_name": "Rack A01", "engineer": "Engineer",
+            "site_name": "HQ", "rack_name": "Rack A01", "engineer": "Engineer",
             "notes": "Database test", "load_current_a": 24, "length_m": 100,
             "temperature_below_25": 20, "temperature_25_30": 27,
             "temperature_30_60": 45, "temperature_above_60": 70,
@@ -116,7 +116,7 @@ class CableSelectionDatabaseTests(TestCase):
     def test_on_site_recommendation_can_be_saved(self):
         response = self.client.post(reverse("cables:on_site_recommendation"), {
             "action": "save", "voltage_drop_mode": "optimized",
-            "site_name": "Cairo DC", "rack_name": "Rack T01",
+            "site_name": "HQ", "rack_name": "Rack T01",
             "technician": "Field Tech", "load_current_a": 24, "length_m": 100,
         })
         self.assertEqual(response.status_code, 200)
@@ -129,10 +129,35 @@ class CableSelectionDatabaseTests(TestCase):
     def test_standard_on_site_mode_uses_1_5_volt_limit(self):
         response = self.client.post(reverse("cables:on_site_recommendation"), {
             "action": "save", "voltage_drop_mode": "standard",
-            "site_name": "Cairo DC", "rack_name": "Rack T02",
+            "site_name": "HQ", "rack_name": "Rack T02",
             "technician": "Field Tech", "load_current_a": 24, "length_m": 100,
         })
         self.assertEqual(response.status_code, 200)
         record = CableSelection.objects.get()
         self.assertEqual(record.recommended_cable_mm2, 70)
         self.assertEqual(record.calculation_details["voltage_drop_limit_v"], 1.5)
+
+    def test_standard_on_site_mode_returns_70_when_sheet_range_is_exceeded(self):
+        response = self.client.post(reverse("cables:on_site_recommendation"), {
+            "action": "save", "voltage_drop_mode": "standard",
+            "site_name": "RMD", "rack_name": "Rack Long Route",
+            "technician": "Field Tech", "load_current_a": 50, "length_m": 100,
+        })
+        self.assertEqual(response.status_code, 200)
+        record = CableSelection.objects.get()
+        self.assertEqual(record.site_name, "RMD")
+        self.assertEqual(record.recommended_cable_mm2, 70)
+        self.assertEqual(record.result_status, "REVIEW REQUIRED")
+        self.assertTrue(record.calculation_details["fallback_to_largest"])
+        self.assertGreater(record.worst_voltage_drop_v, 1.5)
+
+    def test_optimized_on_site_mode_keeps_no_match_when_range_is_exceeded(self):
+        response = self.client.post(reverse("cables:on_site_recommendation"), {
+            "action": "save", "voltage_drop_mode": "optimized",
+            "site_name": "RMD", "rack_name": "Rack Long Route",
+            "technician": "Field Tech", "load_current_a": 80, "length_m": 200,
+        })
+        self.assertEqual(response.status_code, 200)
+        record = CableSelection.objects.get()
+        self.assertIsNone(record.recommended_cable_mm2)
+        self.assertEqual(record.result_status, "NO MATCH")
